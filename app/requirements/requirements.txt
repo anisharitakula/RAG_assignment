@@ -1,0 +1,15 @@
+langchain==0.3.0
+langchain-chroma==0.1.4
+unstructured[all-docs]
+pydantic==2.9.2
+lxml==5.3.0
+langchainhub==0.1.21
+langchain-community==0.3.0
+langchain-openai==0.2.0
+rank-bm25==0.2.2
+datasets==3.0.0
+sentence-transformers==3.1.0
+accelerate==0.34.2
+huggingface-hub==0.25.0
+pytest==8.3.3
+cohere==5.9.2
