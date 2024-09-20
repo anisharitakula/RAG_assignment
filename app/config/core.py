@@ -10,8 +10,8 @@ ROOT = PACKAGE_ROOT.parent
 FILES_PATH=ROOT/"data"
 
 class Config(BaseModel):
-    file_details: list[dict]= [{"path":FILES_PATH,"name":'nrma_car_pds_short.pdf',"metadata":"NRMA"},
-              {"path":FILES_PATH,"name":'allianz_car_pds_short.pdf',"metadata":"ALLIANZ"}]
+    file_details: list[dict]= [{"path":FILES_PATH,"name":'nrma_car_pds.pdf',"metadata":"NRMA"},
+              {"path":FILES_PATH,"name":'allianz_car_pds.pdf',"metadata":"ALLIANZ"}]
     collection_name: str = "summaries"
     
     modelname: str = "gpt-4"

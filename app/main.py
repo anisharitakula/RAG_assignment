@@ -38,7 +38,8 @@ class ComparePipelines():
 
 if __name__=="__main__":
     pipelines_details=[{"file_details":config.file_details,"search_type":"hybrid","embeddings":"openai"},
+                       {"file_details":config.file_details,"search_type":"vector","embeddings":"cohere"},
                        {"file_details":config.file_details,"search_type":"vector","embeddings":"openai"}]
-    pipelines_list=[RAGPipeline(**pipelines_details[0]),RAGPipeline(**pipelines_details[1])]
+    pipelines_list=[RAGPipeline(**pipelines_details[0]),RAGPipeline(**pipelines_details[1]),RAGPipeline(**pipelines_details[2])]
     compare_pipelines=ComparePipelines(pipelines_list)
     compare_pipelines.compare()
