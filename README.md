@@ -1,4 +1,4 @@
-# RAG_assignment
+# RAG pipelines assignment(comparison & evaluation)
 RAG evaluation and comparison of RAG pipelines
 
 For this assignment, I am using the high level architecture to achieve our objective. I am leveraging langchain for most of this exercise as it provides a lot of out of box options for performing a lot of tasks involved in setting up RAG.
