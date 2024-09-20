@@ -4,7 +4,7 @@ RAG evaluation and comparison of RAG pipelines
 For this assignment, I am using the below flowchart or system diagram to achieve our objective. I am leveraging langchain for most of this exercise as it provides a lot of out of box options for performing a lot of tasks involved in setting up RAG.
 
 
-
+![Alt text](https://images.app.goo.gl/Hm4vwBgoCFTA3zf68)
 
 The key steps involved in the process are:
 
