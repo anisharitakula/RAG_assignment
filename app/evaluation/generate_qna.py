@@ -17,7 +17,7 @@ class SyntheticQnA():
         Returns:
             list[tuple]: a tuple of question,answer & doc_id triplets
         """
-        print(f"Total doc_ids is {len(all_ids)}")
+        
         all_docs=[docstore.mget([doc_id])[0] for doc_id in all_ids]
 
         #Create a chain for generation
@@ -28,13 +28,13 @@ class SyntheticQnA():
             | StrOutputParser()
         )
 
+        #Creating a list of {question,answer,doc_id}
         qna_docid_triplets=[]
         for doc_id,doc in zip(all_ids,all_docs):
             context=doc
             # Generate the answer
             triplet=chain_qna.invoke({"context": context, "doc_id": doc_id})
             triplet=eval(triplet)
-            print(triplet,type(triplet))
             qna_docid_triplets.extend(triplet)
         
         print(f"Length of QA dataset is {len(qna_docid_triplets)}")

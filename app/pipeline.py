@@ -17,7 +17,6 @@ from langchain_core.runnables import RunnablePassthrough
 from langchain_openai import OpenAIEmbeddings
 from langchain_community.embeddings import CohereEmbeddings
 
-
 from rank_bm25 import BM25Okapi
 from nltk.tokenize import word_tokenize
 
@@ -37,7 +36,7 @@ class RAGPipeline:
         self.bm25 = None
         self.corpus=[]
         self.all_doc_ids=[]
-        self.q_a_docid=[]
+        self.eval_dataset=[]
         self.relevant_docids=[]
 
         # Initialize components
@@ -67,14 +66,12 @@ class RAGPipeline:
             self.corpus.extend([word_tokenize(text.lower()) for text in texts])
             doc_ids=self.vectorizer.vectorize(texts, text_summaries, f['metadata'])
             self.all_doc_ids.extend(doc_ids)
-            print(f" Adding {len(doc_ids)} to the list and total length is {len(self.all_doc_ids)}")
             if tables and table_summaries:
                 self.vectorizer.vectorize(tables, table_summaries, f['metadata'])
         
         if self.search_type=="hybrid":
             self.initialize_bm25()
             self.retriever_module.bm25 = self.bm25
-            print(f"Just initialized bm25")
 
     def generate_response(self, query):
         """Given an input query, invoke the retriver and generate the response"""
@@ -83,28 +80,31 @@ class RAGPipeline:
         chain = {"context": RunnablePassthrough(), "query": RunnablePassthrough()} | prompt_response | model | StrOutputParser()
         return chain.invoke({"context": context, "query": query})
     
-    def evaluate(self):
-        """As part of evaluation, first check if a golden dataset is available. 
-        Else create a synthetic Q&A
-        and then perform both retriever and generator evaluation"""
+    def evaluate(self,dataset=None):
+        """Create a synthetic Q&A and then perform both retriever and 
+        generator evaluation if no existing dataset is provided"""
         
-        self._generate_qna()
-        if self.q_a_docid:
-            retriever_metric=[]
-            generator_metric=[]
-            for question,answer,doc_id in self.q_a_docid:
-                if question!="NONE":
-                    generated_response=self.generate_response(question)
-                    retriever_metric.append(retriever_eval(self.relevant_docids,doc_id))
-                    generator_metric.append(generator_eval(generated_response,answer))
-            
-            retriever_efficiency=sum(retriever_metric)/len(retriever_metric)#Hit rate
-            generator_efficiency=sum(generator_metric)/len(generator_metric)#Cosine similarity
+        if not dataset:
+            self._generate_qna()
+        else:
+            if not isinstance(dataset,list):
+                raise ValueError("Invalid input dataset provided")
+            self.eval_dataset=dataset
+    
+    
+        retriever_metric=[]
+        generator_metric=[]
+        for question,answer,doc_id in self.eval_dataset:
+            if question!="NONE":
+                generated_response=self.generate_response(question)
+                retriever_metric.append(retriever_eval(self.relevant_docids,doc_id))
+                generator_metric.append(generator_eval(generated_response,answer))
+        
+        retriever_efficiency=sum(retriever_metric)/len(retriever_metric)#Hit rate
+        generator_efficiency=sum(generator_metric)/len(generator_metric)#Cosine similarity
 
-            print(f"The retriever efficiency is {retriever_efficiency} and the generator_efficiency is {generator_efficiency}")
-
-            return retriever_efficiency,generator_efficiency
+        return retriever_efficiency,generator_efficiency
 
     def _generate_qna(self):
-        self.q_a_docid=SyntheticQnA().synthetic_qna(self.all_doc_ids,self.retriever_module.retriever.docstore)
+        self.eval_dataset=SyntheticQnA().synthetic_qna(self.all_doc_ids,self.retriever_module.retriever.docstore)
         return

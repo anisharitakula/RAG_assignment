@@ -1,5 +1,6 @@
 from sentence_transformers import SentenceTransformer
 from sklearn.metrics.pairwise import cosine_similarity
+from config.core import config
 
 def retriever_eval(retrieved_doc_ids: list , answer_doc_id: str) -> int:
     """Generic retriever evaluation metrics. Calculating Hit rate below
@@ -30,7 +31,7 @@ def generator_eval(generated_response: str , answer: str) -> float:
     """
 
     # Load a pre-trained Sentence Transformer model
-    model = SentenceTransformer('paraphrase-MiniLM-L6-v2')
+    model = SentenceTransformer(config.modelname_generator)
 
     # Encode sentences to get their embeddings
     embeddings = model.encode([generated_response, answer])
